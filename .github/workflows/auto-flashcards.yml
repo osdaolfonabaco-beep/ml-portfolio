@@ -3,8 +3,10 @@ name: Auto-Generate Flashcards from Code
 on:
   push:
     paths:
-      - 'foundations/python_advanced/**/*.py'  # Solo se activa con cambios en código Python
+      - 'foundations/python_advanced/**/*.py'
       - 'projects/**/*.py'
+      - 'tools/auto_study_engine/**/*.py'
+  workflow_dispatch:
 
 jobs:
   generate-flashcards:
@@ -24,17 +26,45 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # Aquí instalarías cualquier dependencia futura
         
     - name: Run flashcard generator
       run: |
         cd tools/auto_study_engine
-        python3 agent_claude.py ../foundations/python_advanced/lista_compras.py
+        echo "=== INICIANDO GENERACIÓN DE FLASHCARDS ==="
+        echo "Directorio actual: $(pwd)"
+        echo "Contenido del directorio: $(ls -la)"
+        echo "Estructura del proyecto:"
+        find ../.. -name "*.py" | head -10
+        
+        # Ejecutar el generador principal
+        echo "--- Ejecutando test_quiz.py ---"
+        python3 test_quiz.py
+        
+        # Verificar resultado
+        echo "=== VERIFICANDO RESULTADO ==="
+        if [ -f "../../data/mi_deck.json" ]; then
+            echo "✅ mi_deck.json generado exitosamente"
+            echo "📊 Tamaño del archivo: $(wc -c <../../data/mi_deck.json) bytes"
+            echo "📝 Primeras líneas:"
+            head -n 3 ../../data/mi_deck.json
+        else
+            echo "❌ ERROR CRÍTICO: mi_deck.json no se generó"
+            echo "💥 Revisar logs anteriores para identificar el error"
+            ls -la ../../data/ || echo "No existe carpeta data/"
+            exit 1
+        fi
         
     - name: Commit and push generated flashcards
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add data/mi_deck.json  # Asegúrate que tus flashcards se guarden aquí
-        git commit -m "chore: auto-generate flashcards from code" || echo "No changes to commit"
-        git push
+        # Solo commitar si el archivo existe y tiene contenido
+        if [ -f "data/mi_deck.json" ] && [ -s "data/mi_deck.json" ]; then
+            echo "📦 Commiteando flashcards generadas..."
+            git config --local user.email "action@github.com"
+            git config --local user.name "GitHub Action"
+            git add data/mi_deck.json
+            git commit -m "chore: auto-generate flashcards from code [skip ci]"
+            git push
+        else
+            echo "⚠ No hay flashcards para commitar - archivo no existe o está vacío"
+            exit 0
+        fi
