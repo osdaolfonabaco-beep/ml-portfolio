@@ -1,0 +1,69 @@
+2025-09-04 15:25:34,499 - __main__ - INFO - Starting Auto Study Engine integration test
+2025-09-04 15:25:34,500 - __main__ - DEBUG - Project root: /Users/oscardavidolarteforero/ml_portfolio
+2025-09-04 15:25:34,500 - __main__ - DEBUG - Data directory: /Users/oscardavidolarteforero/ml_portfolio/data
+2025-09-04 15:25:34,929 - __main__ - ERROR - Import error: cannot import name 'run_quiz' from 'tools.auto_study_engine.quizme' (/Users/oscardavidolarteforero/ml_portfolio/tools/auto_study_engine/quizme.py)
+2025-09-04 15:25:34,942 - __main__ - ERROR - Traceback (most recent call last):
+  File "/Users/oscardavidolarteforero/ml_portfolio/tools/auto_study_engine/test_quiz.py", line 52, in main
+    from tools.auto_study_engine.quizme import run_quiz
+ImportError: cannot import name 'run_quiz' from 'tools.auto_study_engine.quizme' (/Users/oscardavidolarteforero/ml_portfolio/tools/auto_study_engine/quizme.py)
+
+2025-09-04 15:31:52,597 - __main__ - INFO - Starting Auto Study Engine integration test
+2025-09-04 15:31:52,597 - __main__ - DEBUG - Project root: /Users/oscardavidolarteforero/ml_portfolio
+2025-09-04 15:31:52,597 - __main__ - DEBUG - Data directory: /Users/oscardavidolarteforero/ml_portfolio/data
+2025-09-04 15:31:52,603 - __main__ - DEBUG - All modules imported successfully
+2025-09-04 15:31:52,603 - __main__ - DEBUG - Source code path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:31:52,604 - __main__ - INFO - Generating flashcards from source code...
+2025-09-04 15:31:52,604 - tools.auto_study_engine.agent_claude - DEBUG - Source path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:31:52,604 - tools.auto_study_engine.agent_claude - DEBUG - Absolute source path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:31:52,604 - tools.auto_study_engine.agent_claude - DEBUG - File exists: True
+2025-09-04 15:31:52,604 - tools.auto_study_engine.agent_claude - DEBUG - File size: 6963 bytes
+2025-09-04 15:31:52,640 - tools.auto_study_engine.agent_claude - DEBUG - Read 6898 characters from /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:31:52,641 - tools.auto_study_engine.agent_claude - DEBUG - Generated 6 flashcards
+2025-09-04 15:31:52,642 - __main__ - DEBUG - Generated deck with 6 flashcards
+2025-09-04 15:31:52,642 - __main__ - DEBUG - Saving deck to: /Users/oscardavidolarteforero/ml_portfolio/data/mi_deck.json
+2025-09-04 15:31:52,659 - tools.auto_study_engine.flashcore - INFO - Deck saved successfully to /Users/oscardavidolarteforero/ml_portfolio/data/mi_deck.json
+2025-09-04 15:31:52,659 - __main__ - INFO - Deck saved successfully
+2025-09-04 15:31:52,660 - __main__ - INFO - Loading deck from file...
+2025-09-04 15:31:52,660 - __main__ - DEBUG - Loaded deck with 6 flashcards
+2025-09-04 15:31:52,660 - __main__ - INFO - Starting quiz system...
+2025-09-04 15:32:08,511 - __main__ - INFO - Quiz completed successfully
+2025-09-04 15:32:08,511 - __main__ - INFO - Integration test completed successfully!
+2025-09-04 15:38:25,255 - __main__ - INFO - Starting Auto Study Engine integration test
+2025-09-04 15:38:25,256 - __main__ - DEBUG - Project root: /Users/oscardavidolarteforero/ml_portfolio
+2025-09-04 15:38:25,256 - __main__ - DEBUG - Data directory: /Users/oscardavidolarteforero/ml_portfolio/data
+2025-09-04 15:38:25,264 - __main__ - DEBUG - All modules imported successfully
+2025-09-04 15:38:25,264 - __main__ - DEBUG - Source code path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:38:25,264 - __main__ - INFO - Generating flashcards from source code...
+2025-09-04 15:38:25,264 - tools.auto_study_engine.agent_claude - DEBUG - Source path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:38:25,265 - tools.auto_study_engine.agent_claude - DEBUG - Absolute source path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:38:25,265 - tools.auto_study_engine.agent_claude - DEBUG - File exists: True
+2025-09-04 15:38:25,265 - tools.auto_study_engine.agent_claude - DEBUG - File size: 6963 bytes
+2025-09-04 15:38:25,265 - tools.auto_study_engine.agent_claude - DEBUG - Read 6898 characters from /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:38:25,266 - tools.auto_study_engine.agent_claude - DEBUG - Generated 6 flashcards
+2025-09-04 15:38:25,266 - __main__ - DEBUG - Generated deck with 6 flashcards
+2025-09-04 15:38:25,267 - __main__ - DEBUG - Saving deck to: /Users/oscardavidolarteforero/ml_portfolio/data/mi_deck.json
+2025-09-04 15:38:25,268 - tools.auto_study_engine.flashcore - INFO - Deck saved successfully to /Users/oscardavidolarteforero/ml_portfolio/data/mi_deck.json
+2025-09-04 15:38:25,268 - __main__ - INFO - Deck saved successfully
+2025-09-04 15:38:25,268 - __main__ - INFO - Loading deck from file...
+2025-09-04 15:38:25,268 - __main__ - DEBUG - Loaded deck with 6 flashcards
+2025-09-04 15:38:25,269 - __main__ - INFO - Skipping interactive quiz in CI environment
+2025-09-04 15:38:25,269 - __main__ - INFO - Integration test completed successfully!
+2025-09-04 15:42:39,112 - __main__ - INFO - 🚀 Starting Auto Study Engine integration test
+2025-09-04 15:42:39,112 - __main__ - DEBUG - Project root: /Users/oscardavidolarteforero/ml_portfolio
+2025-09-04 15:42:39,112 - __main__ - DEBUG - Data directory: /Users/oscardavidolarteforero/ml_portfolio/data
+2025-09-04 15:42:39,112 - __main__ - DEBUG - Checking source code at: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:42:39,112 - __main__ - INFO - ✅ Source code found: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:42:39,116 - __main__ - DEBUG - ✅ All modules imported successfully
+2025-09-04 15:42:39,116 - __main__ - INFO - 🔄 Generating flashcards from source code...
+2025-09-04 15:42:39,116 - tools.auto_study_engine.agent_claude - DEBUG - Source path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:42:39,116 - tools.auto_study_engine.agent_claude - DEBUG - Absolute source path: /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:42:39,116 - tools.auto_study_engine.agent_claude - DEBUG - File exists: True
+2025-09-04 15:42:39,116 - tools.auto_study_engine.agent_claude - DEBUG - File size: 6963 bytes
+2025-09-04 15:42:39,116 - tools.auto_study_engine.agent_claude - DEBUG - Read 6898 characters from /Users/oscardavidolarteforero/ml_portfolio/foundations/python_advanced/lista_compras.py
+2025-09-04 15:42:39,117 - tools.auto_study_engine.agent_claude - DEBUG - Generated 6 flashcards
+2025-09-04 15:42:39,117 - __main__ - INFO - ✅ Generated 6 flashcards
+2025-09-04 15:42:39,117 - __main__ - DEBUG - 💾 Saving deck to: /Users/oscardavidolarteforero/ml_portfolio/data/mi_deck.json
+2025-09-04 15:42:39,118 - tools.auto_study_engine.flashcore - INFO - Deck saved successfully to /Users/oscardavidolarteforero/ml_portfolio/data/mi_deck.json
+2025-09-04 15:42:39,118 - __main__ - INFO - ✅ Deck saved successfully
+2025-09-04 15:42:39,118 - __main__ - INFO - 📊 Deck file size: 1782 bytes
+2025-09-04 15:42:39,118 - __main__ - INFO - 🎉 Integration test completed successfully!
