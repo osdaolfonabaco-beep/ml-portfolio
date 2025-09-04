@@ -17,6 +17,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
         
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -26,45 +27,77 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        echo "✅ Dependencias de Python actualizadas"
         
-    - name: Run flashcard generator
+    - name: Run flashcard generator with debug
       run: |
-        cd tools/auto_study_engine
         echo "=== INICIANDO GENERACIÓN DE FLASHCARDS ==="
+        echo "Directorio de trabajo: $(pwd)"
+        echo "=== ESTRUCTURA DEL PROYECTO ==="
+        echo "Contenido del directorio raíz:"
+        ls -la
+        echo "---"
+        echo "Contenido de tools/auto_study_engine:"
+        ls -la tools/auto_study_engine/
+        echo "---"
+        echo "Contenido de data/:"
+        ls -la data/ || echo "❌ No existe carpeta data/"
+        
+        echo "=== EJECUTANDO GENERADOR ==="
+        cd tools/auto_study_engine
         echo "Directorio actual: $(pwd)"
-        echo "Contenido del directorio: $(ls -la)"
-        echo "Estructura del proyecto:"
-        find ../.. -name "*.py" | head -10
         
-        # Ejecutar el generador principal
-        echo "--- Ejecutando test_quiz.py ---"
-        python3 test_quiz.py
+        # Ejecutar con logging detallado
+        echo "Ejecutando: python3 test_quiz.py"
+        if python3 test_quiz.py; then
+            echo "✅ test_quiz.py ejecutado exitosamente"
+        else
+            echo "❌ test_quiz.py falló con código de error: $?"
+            exit 1
+        fi
         
-        # Verificar resultado
-        echo "=== VERIFICANDO RESULTADO ==="
+        echo "=== VERIFICANDO RESULTADOS ==="
+        echo "Buscando archivos JSON generados..."
+        find ../.. -name "*.json" -type f | head -10
+        
         if [ -f "../../data/mi_deck.json" ]; then
             echo "✅ mi_deck.json generado exitosamente"
-            echo "📊 Tamaño del archivo: $(wc -c <../../data/mi_deck.json) bytes"
-            echo "📝 Primeras líneas:"
+            echo "📊 Tamaño: $(wc -c <../../data/mi_deck.json) bytes"
+            echo "📝 Contenido:"
             head -n 3 ../../data/mi_deck.json
         else
-            echo "❌ ERROR CRÍTICO: mi_deck.json no se generó"
-            echo "💥 Revisar logs anteriores para identificar el error"
+            echo "❌ ERROR: mi_deck.json no se generó"
+            echo "💥 El script no creó el archivo esperado"
+            echo "📋 Listando contenido de data/:"
             ls -la ../../data/ || echo "No existe carpeta data/"
             exit 1
         fi
         
     - name: Commit and push generated flashcards
+      if: success()
       run: |
-        # Solo commitar si el archivo existe y tiene contenido
+        echo "=== INICIANDO COMMIT ==="
+        echo "Verificando existencia de mi_deck.json..."
+        
         if [ -f "data/mi_deck.json" ] && [ -s "data/mi_deck.json" ]; then
-            echo "📦 Commiteando flashcards generadas..."
+            echo "✅ Archivo encontrado y con contenido"
+            echo "�� Tamaño: $(wc -c <data/mi_deck.json) bytes"
+            
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git add data/mi_deck.json
-            git commit -m "chore: auto-generate flashcards from code [skip ci]"
-            git push
+            
+            # Verificar cambios reales
+            if git diff --staged --quiet; then
+                echo "⚠ No hay cambios reales en las flashcards"
+            else
+                git commit -m "chore: auto-generate flashcards from code [skip ci]"
+                git push
+                echo "✅ Commit y push completados"
+            fi
         else
-            echo "⚠ No hay flashcards para commitar - archivo no existe o está vacío"
-            exit 0
+            echo "❌ ERROR: No se puede commitar - archivo no existe o está vacío"
+            echo "📋 Listando data/:"
+            ls -la data/ || echo "No existe carpeta data/"
+            exit 1
         fi
