@@ -1,0 +1,40 @@
+name: Auto-Generate Flashcards from Code
+
+on:
+  push:
+    paths:
+      - 'foundations/python_advanced/**/*.py'  # Solo se activa con cambios en código Python
+      - 'projects/**/*.py'
+
+jobs:
+  generate-flashcards:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # Aquí instalarías cualquier dependencia futura
+        
+    - name: Run flashcard generator
+      run: |
+        cd tools/auto_study_engine
+        python3 agent_claude.py ../foundations/python_advanced/lista_compras.py
+        
+    - name: Commit and push generated flashcards
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/mi_deck.json  # Asegúrate que tus flashcards se guarden aquí
+        git commit -m "chore: auto-generate flashcards from code" || echo "No changes to commit"
+        git push
