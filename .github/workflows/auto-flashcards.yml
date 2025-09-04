@@ -4,13 +4,13 @@ on:
   push:
     paths:
       - 'foundations/python_advanced/**.py'
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   generate-flashcards:
     runs-on: ubuntu-latest
     env:
-      CI: true  # Mark environment as CI
+      CI: true
 
     steps:
     - name: Checkout repository
@@ -23,8 +23,10 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Create data directory
-      run: mkdir -p data
+    - name: Create directories
+      run: |
+        mkdir -p data
+        mkdir -p foundations/python_advanced
 
     - name: Debug directory structure
       run: |
@@ -32,29 +34,33 @@ jobs:
         echo "Directory structure:"
         ls -la
         echo "Foundations directory:"
-        ls -la foundations/python_advanced/ || echo "Foundations directory not found"
-        echo "Tools directory:"
-        ls -la tools/auto_study_engine/ || echo "Tools directory not found"
+        ls -la foundations/ || echo "Foundations not found"
+        echo "Python advanced directory:"
+        ls -la foundations/python_advanced/ || echo "Python advanced not found"
 
-    - name: Run flashcard generator
+    - name: Run flashcard generator with detailed logging
       run: |
         echo "Running flashcard generator..."
         python tools/auto_study_engine/test_quiz.py
         echo "Exit code: $?"
+        echo "Current directory after execution: $(pwd)"
+        echo "Data directory contents:"
+        ls -la data/ || echo "Data directory doesn't exist"
 
     - name: Verify flashcard generation
       run: |
         echo "Checking if flashcards were generated..."
         if [ -f "data/mi_deck.json" ]; then
-          echo "Flashcards generated successfully!"
-          echo "File size: $(wc -c < data/mi_deck.json) bytes"
-          echo "First 200 characters of file:"
-          head -c 200 data/mi_deck.json
-          echo ""
+          echo "✅ Flashcards generated successfully!"
+          echo "📊 File size: $(wc -c < data/mi_deck.json) bytes"
+          echo "First few lines:"
+          head -n 5 data/mi_deck.json
         else
-          echo "ERROR: Flashcards were not generated!"
+          echo "❌ ERROR: mi_deck.json was not generated!"
+          echo "Contents of current directory:"
+          ls -la
           echo "Contents of data directory:"
-          ls -la data/ || echo "Data directory does not exist"
+          ls -la data/ || echo "Data directory doesn't exist"
           exit 1
         fi
 
@@ -66,3 +72,4 @@ jobs:
         git add data/mi_deck.json
         git diff --cached --quiet || git commit -m "Auto-generate flashcards from code [skip ci]"
         git push
+        
