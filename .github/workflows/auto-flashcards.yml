@@ -23,53 +23,99 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Create directories
+    - name: Debug complete environment
       run: |
-        mkdir -p data
-        mkdir -p foundations/python_advanced
-
-    - name: Debug directory structure
-      run: |
+        echo "=== 🐛 DEBUG START ==="
         echo "Current directory: $(pwd)"
-        echo "Directory structure:"
+        echo "=== GITHUB WORKSPACE: $GITHUB_WORKSPACE ==="
+        echo "=== DIRECTORY STRUCTURE ==="
         ls -la
-        echo "Foundations directory:"
-        ls -la foundations/ || echo "Foundations not found"
-        echo "Python advanced directory:"
-        ls -la foundations/python_advanced/ || echo "Python advanced not found"
+        echo "=== FOUNDATIONS CONTENT ==="
+        ls -la foundations/ && ls -la foundations/python_advanced/
+        echo "=== PYTHON VERSION ==="
+        python3 --version
+        echo "=== PYTHON PATH ==="
+        python3 -c "import sys; print('\n'.join(sys.path))"
+        echo "=== FILE CONTENT CHECK ==="
+        if [ -f "foundations/python_advanced/lista_compras.py" ]; then
+          echo "✅ lista_compras.py EXISTS!"
+          echo "📊 File size: $(wc -c < foundations/python_advanced/lista_compras.py) bytes"
+          echo "📄 First 5 lines:"
+          head -n 5 foundations/python_advanced/lista_compras.py
+        else
+          echo "❌ lista_compras.py NOT FOUND!"
+        fi
+        echo "=== 🐛 DEBUG END ==="
 
-    - name: Run flashcard generator with detailed logging
+    - name: Create data directory
+      run: mkdir -p data
+
+    - name: Install dependencies
       run: |
-        echo "Running flashcard generator..."
-        python tools/auto_study_engine/test_quiz.py
-        echo "Exit code: $?"
-        echo "Current directory after execution: $(pwd)"
-        echo "Data directory contents:"
-        ls -la data/ || echo "Data directory doesn't exist"
+        python3 -m pip install --upgrade pip
+
+    - name: Run flashcard generator with extreme debugging
+      run: |
+        echo "=== 🚀 RUNNING FLASHCARD GENERATOR ==="
+        
+        # Set Python path explicitly for CI
+        export PYTHONPATH="$GITHUB_WORKSPACE:$PYTHONPATH"
+        echo "PYTHONPATH: $PYTHONPATH"
+        
+        # Run with detailed output
+        cd $GITHUB_WORKSPACE
+        echo "Running from: $(pwd)"
+        
+        # Execute with full traceback
+        python3 -u tools/auto_study_engine/test_quiz.py 2>&1 | tee test_output.log
+        
+        EXIT_CODE=$?
+        echo "Script exit code: $EXIT_CODE"
+        
+        echo "=== 📊 RESULTS ==="
+        if [ -f "test_output.log" ]; then
+          echo "Last 20 lines of output:"
+          tail -n 20 test_output.log
+        fi
+        
+        if [ $EXIT_CODE -ne 0 ]; then
+          echo "❌ Script failed with exit code: $EXIT_CODE"
+          exit $EXIT_CODE
+        fi
 
     - name: Verify flashcard generation
       run: |
-        echo "Checking if flashcards were generated..."
+        echo "=== ✅ VERIFICATION ==="
         if [ -f "data/mi_deck.json" ]; then
-          echo "✅ Flashcards generated successfully!"
-          echo "📊 File size: $(wc -c < data/mi_deck.json) bytes"
-          echo "First few lines:"
-          head -n 5 data/mi_deck.json
+          echo "🎉 SUCCESS: mi_deck.json generated!"
+          echo "📊 Size: $(wc -c < data/mi_deck.json) bytes"
+          echo "📄 Content preview:"
+          head -n 10 data/mi_deck.json
+          echo "..."
         else
-          echo "❌ ERROR: mi_deck.json was not generated!"
-          echo "Contents of current directory:"
+          echo "❌ CRITICAL ERROR: mi_deck.json was not generated!"
+          echo "📁 Data directory contents:"
+          ls -la data/ 2>/dev/null || echo "Data directory does not exist"
+          echo "📁 Current directory contents:"
           ls -la
-          echo "Contents of data directory:"
-          ls -la data/ || echo "Data directory doesn't exist"
           exit 1
         fi
 
-    - name: Commit generated flashcards
+    - name: Commit and push results
       if: success()
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add data/mi_deck.json
-        git diff --cached --quiet || git commit -m "Auto-generate flashcards from code [skip ci]"
-        git push
+        echo "=== 📦 COMMITTING RESULTS ==="
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
         
+        # Add the generated file
+        git add data/mi_deck.json
+        
+        # Check if there are changes to commit
+        if git diff --cached --quiet; then
+          echo "⚠️ No changes to commit"
+        else
+          git commit -m "🤖 Auto-generate flashcards from code [skip ci]"
+          git push
+          echo "✅ Changes committed and pushed"
+        fi
