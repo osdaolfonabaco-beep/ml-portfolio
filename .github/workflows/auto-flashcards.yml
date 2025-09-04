@@ -1,103 +1,68 @@
-name: Auto-Generate Flashcards from Code
+name: Auto Flashcards Generator
 
 on:
   push:
     paths:
-      - 'foundations/python_advanced/**/*.py'
-      - 'projects/**/*.py'
-      - 'tools/auto_study_engine/**/*.py'
-  workflow_dispatch:
+      - 'foundations/python_advanced/**.py'
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
   generate-flashcards:
     runs-on: ubuntu-latest
-    
+    env:
+      CI: true  # Mark environment as CI
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v3
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
-        
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
-        
-    - name: Install dependencies
+        python-version: '3.9'
+
+    - name: Create data directory
+      run: mkdir -p data
+
+    - name: Debug directory structure
       run: |
-        python -m pip install --upgrade pip
-        echo "✅ Dependencias de Python actualizadas"
-        
-    - name: Run flashcard generator with debug
-      run: |
-        echo "=== INICIANDO GENERACIÓN DE FLASHCARDS ==="
-        echo "Directorio de trabajo: $(pwd)"
-        echo "=== ESTRUCTURA DEL PROYECTO ==="
-        echo "Contenido del directorio raíz:"
+        echo "Current directory: $(pwd)"
+        echo "Directory structure:"
         ls -la
-        echo "---"
-        echo "Contenido de tools/auto_study_engine:"
-        ls -la tools/auto_study_engine/
-        echo "---"
-        echo "Contenido de data/:"
-        ls -la data/ || echo "❌ No existe carpeta data/"
-        
-        echo "=== EJECUTANDO GENERADOR ==="
-        cd tools/auto_study_engine
-        echo "Directorio actual: $(pwd)"
-        
-        # Ejecutar con logging detallado
-        echo "Ejecutando: python3 test_quiz.py"
-        if python3 test_quiz.py; then
-            echo "✅ test_quiz.py ejecutado exitosamente"
+        echo "Foundations directory:"
+        ls -la foundations/python_advanced/ || echo "Foundations directory not found"
+        echo "Tools directory:"
+        ls -la tools/auto_study_engine/ || echo "Tools directory not found"
+
+    - name: Run flashcard generator
+      run: |
+        echo "Running flashcard generator..."
+        python tools/auto_study_engine/test_quiz.py
+        echo "Exit code: $?"
+
+    - name: Verify flashcard generation
+      run: |
+        echo "Checking if flashcards were generated..."
+        if [ -f "data/mi_deck.json" ]; then
+          echo "Flashcards generated successfully!"
+          echo "File size: $(wc -c < data/mi_deck.json) bytes"
+          echo "First 200 characters of file:"
+          head -c 200 data/mi_deck.json
+          echo ""
         else
-            echo "❌ test_quiz.py falló con código de error: $?"
-            exit 1
+          echo "ERROR: Flashcards were not generated!"
+          echo "Contents of data directory:"
+          ls -la data/ || echo "Data directory does not exist"
+          exit 1
         fi
-        
-        echo "=== VERIFICANDO RESULTADOS ==="
-        echo "Buscando archivos JSON generados..."
-        find ../.. -name "*.json" -type f | head -10
-        
-        if [ -f "../../data/mi_deck.json" ]; then
-            echo "✅ mi_deck.json generado exitosamente"
-            echo "📊 Tamaño: $(wc -c <../../data/mi_deck.json) bytes"
-            echo "📝 Contenido:"
-            head -n 3 ../../data/mi_deck.json
-        else
-            echo "❌ ERROR: mi_deck.json no se generó"
-            echo "💥 El script no creó el archivo esperado"
-            echo "📋 Listando contenido de data/:"
-            ls -la ../../data/ || echo "No existe carpeta data/"
-            exit 1
-        fi
-        
-    - name: Commit and push generated flashcards
+
+    - name: Commit generated flashcards
       if: success()
       run: |
-        echo "=== INICIANDO COMMIT ==="
-        echo "Verificando existencia de mi_deck.json..."
-        
-        if [ -f "data/mi_deck.json" ] && [ -s "data/mi_deck.json" ]; then
-            echo "✅ Archivo encontrado y con contenido"
-            echo "�� Tamaño: $(wc -c <data/mi_deck.json) bytes"
-            
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add data/mi_deck.json
-            
-            # Verificar cambios reales
-            if git diff --staged --quiet; then
-                echo "⚠ No hay cambios reales en las flashcards"
-            else
-                git commit -m "chore: auto-generate flashcards from code [skip ci]"
-                git push
-                echo "✅ Commit y push completados"
-            fi
-        else
-            echo "❌ ERROR: No se puede commitar - archivo no existe o está vacío"
-            echo "📋 Listando data/:"
-            ls -la data/ || echo "No existe carpeta data/"
-            exit 1
-        fi
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/mi_deck.json
+        git diff --cached --quiet || git commit -m "Auto-generate flashcards from code [skip ci]"
+        git push

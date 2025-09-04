@@ -1,7 +1,7 @@
 import pytest
 import os
 import json
-from lista_compras import cargar_lista, guardar_lista, agregar_item, eliminar_item, calcular_total, aplicar_descuento
+from foundations.python_advanced.lista_compras import cargar_lista, guardar_lista, agregar_item, eliminar_item, calcular_total, aplicar_descuento
 
 def test_agregar_item_valido():
     """Test: Agregar item con datos válidos."""
