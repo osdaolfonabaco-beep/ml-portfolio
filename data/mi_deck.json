@@ -1,0 +1,17 @@
+[
+    {
+        "pregunta": "¿Qué es Python?",
+        "respuesta": "Un lenguaje de programación",
+        "categoria": "Programación"
+    },
+    {
+        "pregunta": "¿Capital de Francia?",
+        "respuesta": "París",
+        "categoria": "Geografía"
+    },
+    {
+        "pregunta": "¿Qué es una lista?",
+        "respuesta": "Una colección ordenada de elementos",
+        "categoria": "Programación"
+    }
+]
