@@ -266,6 +266,71 @@ def mostrar_ejemplo_uso():
     print("for card in flashcards:")
     print("    print(f'P: {card[\"pregunta\"]}\\nR: {card[\"respuesta\"]}\\n')")
 
+# === NUEVA FUNCIÓN PARA EL SISTEMA PRINCIPAL ===
+def generate_flashcards_from_code() -> List[Dict[str, str]]:
+    """
+    Función principal para generar flashcards desde archivos de código.
+    Esta es la función que llama test_quiz.py y el GitHub Action.
+    
+    Returns:
+        List[Dict[str, str]]: Lista de todas las flashcards generadas
+    """
+    import os
+    
+    # Obtener la ruta absoluta del directorio raíz del proyecto
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.abspath(os.path.join(current_dir, '../..'))
+    
+    # DEBUG: Verificar rutas
+    print(f"🔍 DEBUG: Directorio actual: {current_dir}")
+    print(f"🔍 DEBUG: Root directory: {root_dir}")
+    
+    file_paths = [
+        os.path.join(root_dir, 'foundations', 'python_advanced', 'lista_compras.py'),
+        os.path.join(root_dir, 'foundations', 'python_advanced', 'test_lista_compras.py')
+    ]
+    
+    all_flashcards = []
+    
+    for file_path in file_paths:
+        try:
+            print(f"🔍 DEBUG: Verificando {file_path}")
+            if os.path.exists(file_path):
+                print(f"✅ DEBUG: Archivo encontrado: {os.path.basename(file_path)}")
+                flashcards = generar_flashcards_desde_codigo(file_path)
+                all_flashcards.extend(flashcards)
+                logger.info(f"✓ Generadas {len(flashcards)} flashcards desde {os.path.basename(file_path)}")
+            else:
+                logger.warning(f"⚠ Archivo no encontrado: {file_path}")
+                print(f"❌ DEBUG: Archivo NO existe: {file_path}")
+        except Exception as e:
+            logger.error(f"✗ Error procesando {file_path}: {str(e)}")
+            print(f"💥 ERROR: {str(e)}")
+    
+    print(f"📊 DEBUG: Total flashcards generadas: {len(all_flashcards)}")
+    return all_flashcards
+
+
+# === FUNCIÓN DE UTILIDAD PARA DEBUG ===
+def debug_file_paths():
+    """Función para debuggear las rutas de archivo"""
+    import os
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.abspath(os.path.join(current_dir, '../..'))
+    
+    print("=== DEBUG DE RUTAS ===")
+    print(f"Directorio actual del script: {current_dir}")
+    print(f"Directorio raíz del proyecto: {root_dir}")
+    
+    test_path = os.path.join(root_dir, 'foundations', 'python_advanced', 'lista_compras.py')
+    print(f"Ruta completa a lista_compras.py: {test_path}")
+    print(f"¿Existe el archivo? {os.path.exists(test_path)}")
+    
+    # Listar contenido del directorio
+    python_advanced_dir = os.path.join(root_dir, 'foundations', 'python_advanced')
+    if os.path.exists(python_advanced_dir):
+        print(f"Archivos en python_advanced/: {os.listdir(python_advanced_dir)}")
+
 
 if __name__ == "__main__":
     # Ejemplo básico de testing
